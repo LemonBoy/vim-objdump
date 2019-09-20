@@ -8,6 +8,7 @@ let s:cmd_per_arch = {
     \ 0x28: 'arm-linux-gnueabihf-objdump',
     \ 0x3E: 'x86_64-linux-gnu-objdump -Mintel',
     \ 0xB7: 'aarch64-linux-gnu-objdump',
+    \ 0xF3: 'riscv64-linux-gnu-objdump',
     \ }
 
 func! objdump#disasm(file) abort
