@@ -5,6 +5,7 @@ endif
 let g:loaded_objdump = 1
 
 let s:cmd_per_arch = {
+    \ 0x08: 'mipsel-linux-gnu-objdump',
     \ 0x28: 'arm-linux-gnueabihf-objdump',
     \ 0x3E: 'x86_64-linux-gnu-objdump -Mintel',
     \ 0xB7: 'aarch64-linux-gnu-objdump',
