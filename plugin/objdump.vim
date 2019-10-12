@@ -4,13 +4,24 @@ endif
 
 let g:loaded_objdump = 1
 
-let s:cmd_per_arch = {
-    \ 0x08: 'mipsel-linux-gnu-objdump',
-    \ 0x28: 'arm-linux-gnueabihf-objdump',
-    \ 0x3E: 'x86_64-linux-gnu-objdump -Mintel',
-    \ 0xB7: 'aarch64-linux-gnu-objdump',
-    \ 0xF3: 'riscv64-linux-gnu-objdump',
-    \ }
+if !exists('g:objdump_extra_args')
+    let g:objdump_extra_args = ''
+endif
+
+func! s:get_objdump_path() abort
+    if executable('llvm-objdump')
+	return 'llvm-objdump'
+    endif
+
+    for ver in range(10, 6, -1)
+	let exe = 'llvm-objdump-' . ver
+	if executable(exe)
+	    return exe
+	endif
+    endfor
+
+    return ''
+endfunc
 
 func! objdump#disasm(file) abort
     let file = substitute(a:file, '^objdump://', '', '')
@@ -24,18 +35,16 @@ func! objdump#disasm(file) abort
 	return
     endif
 
-    " Read the e_machine field
-    let arch = (header[0x13]) * 256 + (header[0x12])
-
-    if !has_key(s:cmd_per_arch, arch)
-	echoerr 'No command registered for this architecture'
+    let objdump_exe = s:get_objdump_path()
+    if len(objdump_exe) == 0
+	echoerr 'Could not find LLVM objdump binary'
 	return
     endif
 
     setl ma
-    exe 'keepj sil r! ' . s:cmd_per_arch[arch] . ' -d -- ' . shellescape(file, 1)
+    exe 'keepj sil r! ' . objdump_exe . ' -d ' . g:objdump_extra_args . ' -- ' . shellescape(file, 1)
     norm! gg
-    setl ro noma buftype=nofile bufhidden=hide nobuflisted
+    setl ro noma buftype=nofile bufhidden=hide
     setf objdump
 endf
 

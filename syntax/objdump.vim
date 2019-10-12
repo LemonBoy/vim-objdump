@@ -4,9 +4,9 @@ endif
 
 syntax case ignore
 
-syntax match objFunc '^\x\+\s\+<.*>:$'
+syntax match objFunc '^\x\+\s\+<\?.*>\?:$'
 syntax match objRef  '<.*>$'
-syntax match objNum  '0[xX]\x\+'
+syntax match objNum  '$\?0[xX]\x\+'
 
 hi def link objFunc Function
 hi def link objRef  Identifier
